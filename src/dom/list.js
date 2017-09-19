@@ -23,14 +23,16 @@ export default class List extends Component {
     }
 
     renderLoadMoreNode() {
+        let loadMore = this.props.dom._tree.config.loadMore || 'Load More';
         return (<li className='leaf detached'>
-            <a className='title icon icon-more load-more' onClick={this.loadMore.bind(this)}>Load More</a>
+            <a className='title icon icon-more load-more' onClick={this.loadMore.bind(this)}>{loadMore}</a>
         </li>);
     }
 
     renderLoadingTextNode() {
+        let loading = this.props.dom._tree.config.loading || 'Loading...';
         return (<li className='leaf'>
-            <span className='title icon icon-more'>Loading...</span>
+            <span className='title icon icon-more'>{loading}</span>
         </li>);
     }
 

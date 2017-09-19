@@ -269,8 +269,9 @@ export default class ListItem extends Component {
                 total={pagination.total} />);
         }
         else if (this.props.dom.isDynamic && node.children) {
+            let loadingText = this.props.dom._tree.config.loading || 'Loading...';
             if (!node.hasLoadedChildren()) {
-                return <EmptyList text='Loading...' />;
+                return <EmptyList text={loadingText} />;
             }
             else {
                 return <EmptyList text='No Results' />;

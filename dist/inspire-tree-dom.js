@@ -4010,8 +4010,9 @@ var ListItem = function (_Component) {
                 });
             } else if (this.props.dom.isDynamic && node.children) {
                 if (!node.hasLoadedChildren()) {
+                    var loadingText = this.props.dom._tree.config.loading || 'Loading...';
                     return createVNode$3(16, EmptyList, null, null, {
-                        'text': 'Loading...'
+                        'text': loadingText
                     });
                 } else {
                     return createVNode$3(16, EmptyList, null, null, {
@@ -4113,14 +4114,16 @@ var List = function (_Component) {
     }, {
         key: 'renderLoadMoreNode',
         value: function renderLoadMoreNode() {
-            return createVNode$2(2, 'li', 'leaf detached', createVNode$2(2, 'a', 'title icon icon-more load-more', 'Load More', {
+            var loadMore = this.props.dom._tree.config.loadMore || 'Load More';
+            return createVNode$2(2, 'li', 'leaf detached', createVNode$2(2, 'a', 'title icon icon-more load-more', loadMore, {
                 'onClick': this.loadMore.bind(this)
             }));
         }
     }, {
         key: 'renderLoadingTextNode',
         value: function renderLoadingTextNode() {
-            return createVNode$2(2, 'li', 'leaf', createVNode$2(2, 'span', 'title icon icon-more', 'Loading...'));
+            var loading = this.props.dom._tree.config.loading || 'Loading...';
+            return createVNode$2(2, 'li', 'leaf', createVNode$2(2, 'span', 'title icon icon-more', loading));
         }
     }, {
         key: 'render',
