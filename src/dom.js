@@ -67,10 +67,12 @@ export default class InspireDOM {
 
                 initialRender = false;
             }
+            this._tree.emit('data.rendered', this._tree.nodes());
         });
 
         // Immediately render, just in case any already exists
         this.renderNodes();
+        this._tree.emit('data.rendered', this._tree.nodes());
     }
 
     /**
