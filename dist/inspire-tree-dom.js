@@ -4073,6 +4073,7 @@ var ListItem = function (_Component) {
 
             // Clear dirty bool only after everything has been generated (and states set)
             this.props.node.state('rendered', true);
+			this.props.dom._tree.emit('node.rendered', li, this.props.node);
             this.props.node.itree.dirty = false;
 
             return li;
