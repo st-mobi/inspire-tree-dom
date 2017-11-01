@@ -4094,7 +4094,7 @@ var List = function (_Component) {
     createClass(List, [{
         key: 'shouldComponentUpdate',
         value: function shouldComponentUpdate(nextProps) {
-            return _.find(nextProps.nodes, 'itree.dirty') || stateComparator(this.props, nextProps);
+            return _.find(nextProps.nodes, function(node) { return node.itree.dirty; }) || stateComparator(this.props, nextProps);
         }
     }, {
         key: 'isDeferred',

@@ -5,7 +5,7 @@ import stateComparator from '../lib/state-comparator';
 
 export default class List extends Component {
     shouldComponentUpdate(nextProps) {
-        return _.find(nextProps.nodes, 'itree.dirty') || stateComparator(this.props, nextProps);
+        return _.find(nextProps.nodes, function(node) { return node.itree.dirty; }) || stateComparator(this.props, nextProps);
     }
 
     isDeferred() {
