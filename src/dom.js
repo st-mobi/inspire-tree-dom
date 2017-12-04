@@ -2,6 +2,7 @@
 
 // Libs
 import * as _ from 'lodash';
+import * as keys from './lib/keycodes';
 import { render } from 'inferno';
 import Inferno from 'inferno';
 import InspireTree from 'inspire-tree';
@@ -32,16 +33,27 @@ export default class InspireDOM {
         // Let InspireTree know we're in control of a node's `rendered` state
         tree.usesNativeDOM = true;
 
+        const dndDefaults = {
+            enabled: false,
+            validateOn: 'dragstart',
+            validate: null
+        };
+
         // Assign defaults
-        this.config = _.defaults({}, opts, {
+        this.config = _.defaultsDeep({}, opts, {
             autoLoadMore: true,
             deferredRendering: false,
-            dragAndDrop: false,
+            dragAndDrop: dndDefaults,
             nodeHeight: 25,
             showCheckboxes: false,
             tabindex: -1,
             target: false
         });
+
+        if (opts.dragAndDrop === true) {
+            this.config.dragAndDrop = dndDefaults;
+            this.config.dragAndDrop.enabled = true;
+        }
 
         // If user didn't specify showCheckboxes,
         // but is using checkbox selection mode,
@@ -109,14 +121,16 @@ export default class InspireDOM {
         this.$target.setAttribute('tabindex', this.config.tabindex || 0);
 
         // Handle keyboard interaction
-        this.$target.addEventListener('keyup', this.keyboardListener.bind(this));
+        this.$target.addEventListener('keydown', this.keyboardListener.bind(this));
 
         // Drag and drop listeners
-        if (this.config.dragAndDrop) {
+        if (this.config.dragAndDrop.enabled) {
             this.$target.addEventListener('dragenter', this.onDragEnter.bind(this), false);
             this.$target.addEventListener('dragleave', this.onDragLeave.bind(this), false);
             this.$target.addEventListener('dragover', this.onDragOver.bind(this), false);
             this.$target.addEventListener('drop', this.onDrop.bind(this), false);
+
+            this.$target.classList.add('drag-and-drop');
         }
 
         // Sync browser focus to focus state
@@ -129,7 +143,7 @@ export default class InspireDOM {
 
         if (this.config.deferredRendering || this._tree.config.deferredLoading) {
             // Force valid pagination limit based on viewport
-            var limit = this._tree.config.pagination.limit;
+            const limit = this._tree.config.pagination.limit;
             this._tree.config.pagination.limit = limit > 0 ? limit : _.ceil(this.$scrollLayer.clientHeight / this.config.nodeHeight);
 
             // Listen for scrolls for automatic loading
@@ -213,7 +227,7 @@ export default class InspireDOM {
      * @return {InspireTree} Tree instance.
      */
     static getTreeById(id) {
-        var element = document.querySelector('[data-uid="' + id + '"]');
+        const element = document.querySelector('[data-uid="' + id + '"]');
         if (element) {
             return element.inspireTree;
         }
@@ -228,25 +242,34 @@ export default class InspireDOM {
      * @return {void}
      */
     keyboardListener(event) {
+        event.stopPropagation();
+
+        // Ignore keys we won't care for.
+        // For example, this avoids trampling cmd+reload
+        if ([keys.DOWN_ARROW, keys.ENTER, keys.LEFT_ARROW, keys.RIGHT_ARROW, keys.UP_ARROW].indexOf(event.which) < 0) {
+            return;
+        }
+
         // Navigation
-        let focusedNode = this._tree.focused();
-        if (focusedNode) {
-            focusedNode = focusedNode[0];
+        const focusedNodes = this._tree.focused();
+        if (focusedNodes.length) {
+            event.preventDefault();
+
             switch (event.which) {
-                case 40:
-                    this.moveFocusDownFrom(focusedNode);
+                case keys.DOWN_ARROW:
+                    this.moveFocusDownFrom(focusedNodes[0]);
                     break;
-                case 13:
-                    focusedNode.toggleSelect();
+                case keys.ENTER:
+                    focusedNodes[0].toggleSelect();
                     break;
-                case 37:
-                    focusedNode.collapse();
+                case keys.LEFT_ARROW:
+                    focusedNodes[0].collapse();
                     break;
-                case 39:
-                    focusedNode.expand();
+                case keys.RIGHT_ARROW:
+                    focusedNodes[0].expand();
                     break;
-                case 38:
-                    this.moveFocusUpFrom(focusedNode);
+                case keys.UP_ARROW:
+                    this.moveFocusUpFrom(focusedNodes[0]);
                     break;
                 default:
             }
@@ -307,7 +330,7 @@ export default class InspireDOM {
     onDragEnter(event) {
         event.preventDefault();
 
-        event.target.classList.add('itree-droppable-active');
+        event.target.classList.add('drag-targeting', 'drag-targeting-insert');
     }
 
     /**
@@ -347,18 +370,23 @@ export default class InspireDOM {
     onDrop(event) {
         event.preventDefault();
 
+        this.unhighlightTarget(event.target);
+
         let treeId = event.dataTransfer.getData('treeId');
         let nodeId = event.dataTransfer.getData('nodeId');
 
         // Find the tree
         const tree = InspireDOM.getTreeById(treeId);
+        const node = tree.node(nodeId);
+
+        node.state('drop-target', true);
 
         // Remove the node from its previous context
-        let exported = tree.node(nodeId).remove();
+        let exported = node.remove(true);
 
         // Add the node to this tree/level
-        var newNode = this._tree.addNode(exported);
-        var newIndex = this._tree.indexOf(newNode);
+        const newNode = this._tree.addNode(exported);
+        const newIndex = this._tree.indexOf(newNode);
 
         this._tree.emit('node.drop', event, newNode, null, newIndex);
     }
@@ -431,12 +459,12 @@ export default class InspireDOM {
      *
      * @category DOM
      * @private
-     * @param {HTMLElement} node Target element.
+     * @param {HTMLElement} element Target element.
      * @return {void}
      */
-    unhighlightTarget(node) {
-        if (node) {
-            node.classList.remove('itree-droppable-active');
+    unhighlightTarget(element) {
+        if (element) {
+            element.classList.remove('drag-targeting', 'drag-targeting-insert');
         }
     }
 }

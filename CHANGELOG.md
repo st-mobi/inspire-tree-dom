@@ -1,5 +1,37 @@
 # Changes to Inspire Tree DOM
 
+# 4.0.3
+
+- Fixed color of focused wholerow border for dark theme.
+- Fixed left/right/enter keys using an invalid variable.
+
+# 4.0.2
+
+- Fixed keyboard navigation error caused by linter fix regression.
+
+# 4.0.1
+
+- Fixed keyboard navigation also causing browser scroll behavior.
+- Fixed script error when pressing an arrow key after a node has lost focus.
+- Improved typescript definition file (Requires InspireTree v4.2.1).
+- Moved two npm dependencies to the dependencies array to support ES6 users.
+
+# 4.0.0
+
+- Improved node drag target validation.
+- Refactored drag and drop to use node states instead of manual class manipulation.
+- Fixed custom css class logic for node anchors.
+- Fixed node title overflow error in chrome.
+- Removed duplicate `indeterminate` logic for checkboxes.
+
+**Breaking Changes**
+
+- Requires InspireTree v4.2+.
+- Drag and drop css classes have changed:
+- `itree-droppable-active.itree-droppable-target` -> `.drag-targeting.drag-targeting-insert`
+- `itree-droppable-active.itree-droppable-target-above` -> `.drag-targeting.drag-targeting-above`
+- `itree-droppable-active.itree-droppable-target-below` -> `.drag-targeting.drag-targeting-below`
+
 # 3.0.2
 
 - Restored missing `node.edited` event.

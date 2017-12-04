@@ -20,9 +20,8 @@ export default class Checkbox extends Component {
     render() {
         return (<input
             checked={this.props.node.checked()}
-            indeterminate={this.props.node.indeterminate()}
+            indeterminate={this.props.indeterminate}
             onClick={this.click.bind(this)}
-            ref={elem => elem.indeterminate = this.props.indeterminate}
             type='checkbox' />);
     }
 }
