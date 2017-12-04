@@ -4376,9 +4376,9 @@ var InspireDOM = function () {
 
         classCallCheck(this, InspireDOM);
 
-        if (!(tree instanceof InspireTree)) {
-            throw new TypeError('Tree argument is not an InspireTree instance.');
-        }
+        // if (!(tree instanceof InspireTree)) {
+        //     throw new TypeError('Tree argument is not an InspireTree instance.');
+        // }
 
         // Init properties
         this._tree = tree;

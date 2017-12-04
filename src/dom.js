@@ -16,9 +16,9 @@ import Tree from './dom/tree';
  */
 export default class InspireDOM {
     constructor(tree, opts) {
-        if (!(tree instanceof InspireTree)) {
-            throw new TypeError('Tree argument is not an InspireTree instance.');
-        }
+        // if (!(tree instanceof InspireTree)) {
+        //     throw new TypeError('Tree argument is not an InspireTree instance.');
+        // }
 
         // Init properties
         this._tree = tree;
